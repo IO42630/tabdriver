@@ -1,26 +1,28 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.olexyn</groupId>
 	<artifactId>tabdriver</artifactId>
-	<version>1.1</version>
+	<version>1.2</version>
 	<packaging>jar</packaging>
 
-	<name>tabriver</name>
+	<name>tabdriver</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<xx.java.version>17</xx.java.version>
+		<xx.selenium.version>3.141.59</xx.selenium.version>
+		<xx.webdriver.version>0.9.7376</xx.webdriver.version>
 	</properties>
-
 
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>com.olexyn</groupId>
 				<artifactId>zeebom</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -37,43 +39,43 @@
 			<!-- must come before selenium -->
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-api</artifactId>
-			<version>3.141.59</version>
+			<version>${xx.selenium.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.webdriver</groupId>
 			<artifactId>webdriver-selenium</artifactId>
-			<version>0.9.7376</version>
+			<version>${xx.webdriver.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-chrome-driver</artifactId>
-			<version>3.141.59</version>
+			<version>${xx.selenium.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.webdriver</groupId>
 			<artifactId>webdriver-common</artifactId>
-			<version>0.9.7376</version>
+			<version>${xx.webdriver.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.seleniumhq.webdriver</groupId>
 			<artifactId>webdriver-support</artifactId>
-			<version>0.9.7376</version>
+			<version>${xx.webdriver.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>${xx.selenium.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-java</artifactId>
-			<version>3.141.59</version>
-		</dependency>
 
 		<dependency>
 			<groupId>com.olexyn</groupId>
 			<artifactId>propconf</artifactId>
-			<version>1.0-SNAPSHOT</version>
-			<scope>compile</scope>
+			<version>1.1</version>
 		</dependency>
 	</dependencies>
 
@@ -100,6 +102,5 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
 
 </project>
