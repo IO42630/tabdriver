@@ -3,7 +3,7 @@ package com.olexyn.tabdriver;
 import java.nio.file.Path;
 import java.util.HashMap;
 
-import com.olexyn.PropConf;
+import com.olexyn.propconf.PropConf;
 import lombok.experimental.UtilityClass;
 import org.openqa.selenium.chrome.ChromeDriverService;
 import org.openqa.selenium.chrome.ChromeOptions;
