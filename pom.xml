@@ -5,7 +5,7 @@
 
 	<groupId>com.olexyn</groupId>
 	<artifactId>tabdriver</artifactId>
-	<version>1.2</version>
+	<version>1.2.2</version>
 	<packaging>jar</packaging>
 
 	<name>tabdriver</name>
@@ -99,8 +99,27 @@
 						<target>${xx.java.version}</target>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-deploy-plugin</artifactId>
+					<version>3.0.0-M1</version>
+					<configuration>
+						<altDeploymentRepository>internal.repo::default::http://localhost:9020/repository/maven-releases/</altDeploymentRepository>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<distributionManagement>
+		<repository>
+			<id>nexus-releases</id>
+			<url>http://localhost:9020/repository/maven-releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus-snapshots</id>
+			<url>http://localhost:9020/repository/maven-snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 
 </project>

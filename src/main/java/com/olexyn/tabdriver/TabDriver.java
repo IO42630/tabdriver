@@ -236,13 +236,18 @@ public class TabDriver extends ChromeDriver implements JavascriptExecutor {
         return filterElementListBy(elements, CRITERIA.NONE, Constants.EMPTY);
     }
 
+    public synchronized List<WebElement> findElements(By by) {
+        return findElements(by);
+    }
+
     public synchronized void followContainedLink(WebElement element) {
         String link = element.getAttribute("href");
         if (link != null) { navigate().to(link); }
     }
 
-    public synchronized void setRadio(By by, boolean checked) {
-        ((JavascriptExecutor) this).executeScript("arguments[0].checked = " + checked + ";", findElement(by));
+
+    public synchronized void setRadio(WebElement element, boolean checked) {
+        ((JavascriptExecutor) this).executeScript("arguments[0].checked = " + checked + ";", element);
     }
 
     public synchronized void setComboByDataValue(By comboBy, String dataValue) {

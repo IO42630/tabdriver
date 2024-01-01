@@ -8,4 +8,7 @@ public interface Constants {
 	String ID = "id";
 	String TABLE = "table";
 	String DIV = "div";
+	String LABEL = "label";
+	String CLASS = "class";
+	String CHECKBOX = "checkbox";
 }
