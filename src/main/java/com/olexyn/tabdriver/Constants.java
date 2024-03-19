@@ -11,4 +11,5 @@ public interface Constants {
 	String LABEL = "label";
 	String CLASS = "class";
 	String CHECKBOX = "checkbox";
+	 String ABOUT_BLANK = "about:blank";
 }

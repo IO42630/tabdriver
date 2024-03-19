@@ -1,31 +1,83 @@
 package com.olexyn.tabdriver;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import com.olexyn.min.log.LogU;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoSuchFrameException;
 import org.openqa.selenium.SearchContext;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 
-public class TabDriver extends ChromeDriver implements JavascriptExecutor {
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-    private final Map<String, Tab> TABS = new HashMap<>();
+import static com.olexyn.tabdriver.Constants.ABOUT_BLANK;
 
-    public TabDriver(ChromeDriverService service, Capabilities capabilities) {
-        super(service, capabilities);
-        manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+@SuppressWarnings("unused")
+public class TabDriver implements JavascriptExecutor {
+
+    private final Map<String, Tab> tabs = new HashMap<>();
+    private final ChromeDriver  chromeDriver;
+
+    @SuppressWarnings("deprecation")
+    public TabDriver(TabDriverConfigProvider configProvider) {
+        var path = configProvider.getDriverPath();
+        var service = new ChromeDriverService.Builder()
+            .usingDriverExecutable(path.toFile())
+            .usingAnyFreePort()
+            .build();
+        chromeDriver = new ChromeDriver(service, configProvider.getCapabilities());
+        chromeDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+    }
+
+    public WebDriver.Navigation navigate() {
+        return chromeDriver.navigate();
+    }
+
+    public WebDriver.TargetLocator switchTo() {
+        return chromeDriver.switchTo();
+    }
+
+    public String getWindowHandle() {
+        return chromeDriver.getWindowHandle();
+    }
+
+    public Set<String> getWindowHandles() {
+        return chromeDriver.getWindowHandles();
+    }
+
+    public String getTitle() {
+        return chromeDriver.getTitle();
+    }
+
+    public String getCurrentUrl() {
+        return chromeDriver.getCurrentUrl();
+    }
+
+    public String getPageSource() {
+        return chromeDriver.getPageSource();
+    }
+
+    public void close() {
+        chromeDriver.close();
+    }
+
+    public void quit() {
+        chromeDriver.quit();
+    }
+
+    public List<WebElement> findElements(By by) {
+        return chromeDriver.findElements(by);
     }
 
     public synchronized void registerCurrentTab(String purpose) {
@@ -33,28 +85,28 @@ public class TabDriver extends ChromeDriver implements JavascriptExecutor {
         tab.setName(getTitle());
         tab.setUrl(getCurrentUrl());
         tab.setPurpose(purpose);
-        TABS.put(tab.getHandle(), tab);
+        tabs.put(tab.getHandle(), tab);
     }
 
     public synchronized Tab getCurrentTab() {
-        return TABS.get(getWindowHandle());
+        return tabs.get(getWindowHandle());
     }
 
     public synchronized List<Tab> getTabByPurpose(String purpose) {
-        return TABS.values().stream()
-            .filter(x -> x.getPurpose() == purpose)
-            .collect(Collectors.toList());
+        return tabs.values().stream()
+            .filter(x -> Objects.equals(x.getPurpose(), purpose))
+            .toList();
     }
 
     public synchronized String registerBlankTab(String purpose) {
         Set<String> openTabHandles = getWindowHandles();
         for (String openTabHandle : openTabHandles) {
-            if (!TABS.containsKey(openTabHandle)) {
+            if (!tabs.containsKey(openTabHandle)) {
                 Tab blankTab = new Tab(openTabHandle);
-                blankTab.setName("about:blank");
-                blankTab.setUrl("about:blank");
+                blankTab.setName(ABOUT_BLANK);
+                blankTab.setUrl(ABOUT_BLANK);
                 blankTab.setPurpose(purpose);
-                TABS.put(openTabHandle, blankTab);
+                tabs.put(openTabHandle, blankTab);
                 return openTabHandle;
             }
         }
@@ -68,12 +120,12 @@ public class TabDriver extends ChromeDriver implements JavascriptExecutor {
         tab.setName(getTitle());
         tab.setUrl(getCurrentUrl());
         tab.setPurpose(purpose);
-        TABS.put(handle, tab);
+        tabs.put(handle, tab);
         return handle;
     }
 
     public synchronized void switchToTab(String handle) {
-        for (Entry<String, Tab> entry : TABS.entrySet()) {
+        for (Entry<String, Tab> entry : tabs.entrySet()) {
             String tabHandle = entry.getKey();
             if (tabHandle.equals(handle)) {
                 switchTo().window(tabHandle);
@@ -90,14 +142,15 @@ public class TabDriver extends ChromeDriver implements JavascriptExecutor {
      * If the current tab is empty, it is registered - this happens usually only with the initial tab of the session.
      */
     public synchronized void newTab(String purpose) {
-        String currentUrl = getCurrentUrl();
+        String currentUrl = getCurrentUrl(); // TODO this throws error, just get a new window
         if (currentUrl.isEmpty()
             || currentUrl.equals("data:,")
-            || currentUrl.equals("about:blank")) {
+            || currentUrl.equals(ABOUT_BLANK)) {
             registerExistingTab(purpose);
         } else {
             executeScript("window.open(arguments[0])");
-            switchToTab(registerBlankTab(purpose));
+            Optional.ofNullable(registerBlankTab(purpose))
+                .ifPresent(this::switchToTab);
         }
     }
 
@@ -115,14 +168,12 @@ public class TabDriver extends ChromeDriver implements JavascriptExecutor {
         navigate().refresh();
     }
 
-    @Override
     public synchronized void get(String url) {
-        super.get(url);
+        chromeDriver.get(url);
     }
 
-    @Override
     public synchronized WebElement findElement(By by) {
-        return super.findElement(by);
+        return chromeDriver.findElement(by);
     }
 
     public synchronized void executeScript(String script) {
@@ -182,10 +233,16 @@ public class TabDriver extends ChromeDriver implements JavascriptExecutor {
         return FRAME_ID_NONE_FOUND;
     }
 
-//    @Override
-//    public boolean isJavascriptEnabled() {
-//        return false;
-//    }
+    @Override
+    public Object executeScript(String script, Object... args) {
+        return null;
+    }
+
+    @Override
+    public Object executeAsyncScript(String script, Object... args) {
+        return null;
+    }
+
 
     public enum CRITERIA {
         CLASS,
@@ -236,10 +293,6 @@ public class TabDriver extends ChromeDriver implements JavascriptExecutor {
         return filterElementListBy(elements, CRITERIA.NONE, Constants.EMPTY);
     }
 
-    public synchronized List<WebElement> findElements(By by) {
-        return findElements(by);
-    }
-
     public synchronized void followContainedLink(WebElement element) {
         String link = element.getAttribute("href");
         if (link != null) { navigate().to(link); }
@@ -254,6 +307,15 @@ public class TabDriver extends ChromeDriver implements JavascriptExecutor {
         WebElement combo = findElement(comboBy);
         combo.click();
         combo.findElement(By.cssSelector("li[data-value='" + dataValue + "']")).click();
+    }
+
+
+    public synchronized Optional<WebElement> findByCss(String css) {
+        try {
+            return Optional.of(findElement(By.cssSelector(css)));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     /**

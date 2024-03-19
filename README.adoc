@@ -1,4 +1,9 @@
-# TabDriver
+= TabDriver
+
+:stylesheet: ../shared/adoc-styles.css
+:toc:
+:toclevels: 4
+
 
 * Wrapper for `selenium` to make it easier to use.
 * Must use `Chrome` (not `Chromium`).

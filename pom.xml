@@ -2,8 +2,11 @@
 		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
-	<groupId>com.olexyn</groupId>
+	<parent>
+		<groupId>com.olexyn</groupId>
+		<artifactId>min-root</artifactId>
+		<version>jdk17-0.0</version>
+	</parent>
 	<artifactId>tabdriver</artifactId>
 	<version>1.2.2</version>
 	<packaging>jar</packaging>
@@ -11,8 +14,6 @@
 	<name>tabdriver</name>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<xx.java.version>17</xx.java.version>
 		<xx.selenium.version>3.141.59</xx.selenium.version>
 		<xx.webdriver.version>0.9.7376</xx.webdriver.version>
 	</properties>
@@ -21,8 +22,8 @@
 		<dependencies>
 			<dependency>
 				<groupId>com.olexyn</groupId>
-				<artifactId>zeebom</artifactId>
-				<version>1.1</version>
+				<artifactId>min-bom</artifactId>
+				<version>jdk17-0.3</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -31,9 +32,8 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.olexyn.min.log</groupId>
+			<groupId>com.olexyn</groupId>
 			<artifactId>min-log</artifactId>
-			<version>0.1.1</version>
 		</dependency>
 		<dependency>
 			<!-- must come before selenium -->
@@ -71,55 +71,13 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>com.olexyn</groupId>
-			<artifactId>propconf</artifactId>
-			<version>1.1</version>
+			<artifactId>min-prop</artifactId>
 		</dependency>
 	</dependencies>
 
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.1.0</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>3.0.2</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.11.0</version>
-					<configuration>
-						<source>${xx.java.version}</source>
-						<target>${xx.java.version}</target>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>3.0.0-M1</version>
-					<configuration>
-						<altDeploymentRepository>internal.repo::default::http://localhost:9020/repository/maven-releases/</altDeploymentRepository>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
 
-	<distributionManagement>
-		<repository>
-			<id>nexus-releases</id>
-			<url>http://localhost:9020/repository/maven-releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<url>http://localhost:9020/repository/maven-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+
 
 </project>
