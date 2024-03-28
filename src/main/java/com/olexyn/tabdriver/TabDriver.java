@@ -1,7 +1,6 @@
 package com.olexyn.tabdriver;
 
 import com.olexyn.min.log.LogU;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -313,6 +312,14 @@ public class TabDriver implements JavascriptExecutor {
     public synchronized Optional<WebElement> findByCss(String css) {
         try {
             return Optional.of(findElement(By.cssSelector(css)));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public synchronized Optional<WebElement> findByCss(WebElement context, String css) {
+        try {
+            return Optional.of(context.findElement(By.cssSelector(css)));
         } catch (Exception e) {
             return Optional.empty();
         }
