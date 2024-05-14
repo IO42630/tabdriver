@@ -1,6 +1,6 @@
 package com.olexyn.tabdriver;
 
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.nio.file.Path;
 
@@ -14,6 +14,6 @@ public interface TabDriverConfigProvider {
 
     boolean isHeadless();
 
-    DesiredCapabilities getCapabilities();
+    ChromeOptions getOptions();
 
 }

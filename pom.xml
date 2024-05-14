@@ -8,7 +8,7 @@
 		<version>jdk17-0.0</version>
 	</parent>
 	<artifactId>tabdriver</artifactId>
-	<version>1.2.2</version>
+	<version>1.2.3</version>
 	<packaging>jar</packaging>
 
 	<name>tabdriver</name>

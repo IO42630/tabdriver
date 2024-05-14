@@ -35,7 +35,8 @@ public class TabDriver implements JavascriptExecutor {
             .usingDriverExecutable(path.toFile())
             .usingAnyFreePort()
             .build();
-        chromeDriver = new ChromeDriver(service, configProvider.getCapabilities());
+
+        chromeDriver = new ChromeDriver(service, configProvider.getOptions());
         chromeDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
     }
 
