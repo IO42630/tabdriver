@@ -26,7 +26,7 @@ import static com.olexyn.tabdriver.Constants.ABOUT_BLANK;
 public class TabDriver implements JavascriptExecutor {
 
     private final Map<String, Tab> tabs = new HashMap<>();
-    private final ChromeDriver  chromeDriver;
+    private final ChromeDriver chromeDriver;
 
     @SuppressWarnings("deprecation")
     public TabDriver(TabDriverConfigProvider configProvider) {
@@ -326,11 +326,27 @@ public class TabDriver implements JavascriptExecutor {
         }
     }
 
+    public synchronized List<WebElement> findAllByCss(String css) {
+        try {
+            return findElements(By.cssSelector(css));
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
+    public synchronized List<WebElement> findAllByCss(WebElement context, String css) {
+        try {
+            return context.findElements(By.cssSelector(css));
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
     /**
      * Any-Match.
      */
     public synchronized WebElement getByFieldValue(String type, String field, String value) {
-        return findElement(By.cssSelector(type + "[" + field + "*='" + value + "']"));
+        return findElement(By.cssSelector(type + '[' + field + "*='" + value + "']"));
     }
 
     public synchronized void clickByFieldValue(String type, String field, String value) {
