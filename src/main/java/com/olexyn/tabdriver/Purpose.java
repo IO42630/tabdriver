@@ -1,10 +1,5 @@
 package com.olexyn.tabdriver;
 
-import lombok.Getter;
-import lombok.Setter;
-
-@Getter
-@Setter
 public record Purpose(String name) {
 
     @Override
