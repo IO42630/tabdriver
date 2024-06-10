@@ -1,20 +1,17 @@
 package com.olexyn.tabdriver;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Setter
 @Getter
+@AllArgsConstructor
 public class Tab {
 
-    String handle;
-    String name;
-    String url;
-    String purpose;
+    private String handle;
+    private Purpose purpose;
 
-    public Tab(String handle) {
-        this.handle = handle;
-    }
 
 
 }

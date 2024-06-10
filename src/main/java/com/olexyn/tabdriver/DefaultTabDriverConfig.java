@@ -12,7 +12,7 @@ public abstract class DefaultTabDriverConfig  implements TabDriverConfigProvider
     public ChromeOptions getOptions() {
 
         ChromeOptions options = new ChromeOptions();
-        options.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
+        options.setCapability(CapabilityType.ACCEPT_INSECURE_CERTS, true);
         options.addArguments("--start-maximized");
         if (isHeadless()) {
             options.addArguments("--window-size=1920,1080");

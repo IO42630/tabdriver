@@ -1,6 +1,7 @@
 package com.olexyn.tabdriver;
 
 import com.olexyn.min.log.LogU;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
@@ -8,6 +9,7 @@ import org.openqa.selenium.NoSuchFrameException;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.WindowType;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 
@@ -20,10 +22,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static com.olexyn.tabdriver.Constants.ABOUT_BLANK;
 
 @SuppressWarnings("unused")
-public class TabDriver implements JavascriptExecutor {
+public class TabDriver implements JavascriptExecutor, ITabDriver {
 
     private final Map<String, Tab> tabs = new HashMap<>();
     private final ChromeDriver chromeDriver;
@@ -80,89 +81,32 @@ public class TabDriver implements JavascriptExecutor {
         return chromeDriver.findElements(by);
     }
 
-    public synchronized void registerCurrentTab(String purpose) {
-        Tab tab = new Tab(getWindowHandle());
-        tab.setName(getTitle());
-        tab.setUrl(getCurrentUrl());
-        tab.setPurpose(purpose);
-        tabs.put(tab.getHandle(), tab);
-    }
 
-    public synchronized Tab getCurrentTab() {
+
+    private synchronized Tab getCurrentTab() {
         return tabs.get(getWindowHandle());
     }
 
-    public synchronized List<Tab> getTabByPurpose(String purpose) {
-        return tabs.values().stream()
+    @Override
+    public synchronized void goToTab(Purpose purpose) {
+        tabs.values().stream()
             .filter(x -> Objects.equals(x.getPurpose(), purpose))
-            .toList();
+            .findFirst()
+            .ifPresent(this::switchToTab);
     }
 
-    public synchronized String registerBlankTab(String purpose) {
-        Set<String> openTabHandles = getWindowHandles();
-        for (String openTabHandle : openTabHandles) {
-            if (!tabs.containsKey(openTabHandle)) {
-                Tab blankTab = new Tab(openTabHandle);
-                blankTab.setName(ABOUT_BLANK);
-                blankTab.setUrl(ABOUT_BLANK);
-                blankTab.setPurpose(purpose);
-                tabs.put(openTabHandle, blankTab);
-                return openTabHandle;
-            }
-        }
-        LogU.warnPlain("Not unregistered tab found.");
-        return null;
-    }
-
-    public synchronized String registerExistingTab(String purpose) {
-        String handle = getWindowHandle();
-        Tab tab = new Tab(handle);
-        tab.setName(getTitle());
-        tab.setUrl(getCurrentUrl());
-        tab.setPurpose(purpose);
-        tabs.put(handle, tab);
-        return handle;
-    }
-
-    public synchronized void switchToTab(String handle) {
-        for (Entry<String, Tab> entry : tabs.entrySet()) {
-            String tabHandle = entry.getKey();
-            if (tabHandle.equals(handle)) {
-                switchTo().window(tabHandle);
-            }
-        }
-    }
-
-    public synchronized void switchToTab(Tab tab) {
+    private synchronized void switchToTab(Tab tab) {
         switchTo().window(tab.getHandle());
     }
 
-    /**
-     * Opens a new tab, and "moves" the WebDriver to the new tab.
-     * If the current tab is empty, it is registered - this happens usually only with the initial tab of the session.
-     */
-    public synchronized void newTab(String purpose) {
-        String currentUrl = getCurrentUrl(); // TODO this throws error, just get a new window
-        if (currentUrl.isEmpty()
-            || currentUrl.equals("data:,")
-            || currentUrl.equals(ABOUT_BLANK)) {
-            registerExistingTab(purpose);
-        } else {
-            executeScript("window.open(arguments[0])");
-            Optional.ofNullable(registerBlankTab(purpose))
-                .ifPresent(this::switchToTab);
-        }
+    @Override
+    public synchronized void newTab(Purpose purpose) {
+        switchTo().newWindow(WindowType.TAB);
+        String handle = getWindowHandle();
+        Tab tab = new Tab(handle, purpose);
+        tabs.put(handle, tab);
     }
 
-    public synchronized void switchToTabByPurpose(String purpose) {
-        List<Tab> existingTabs = getTabByPurpose(purpose);
-        if (!existingTabs.isEmpty()) {
-            switchToTab(existingTabs.get(0));
-        } else {
-            Tab currentTab = getCurrentTab();
-
-        }
-    }
 
     public synchronized void refresh() {
         navigate().refresh();
@@ -186,7 +130,7 @@ public class TabDriver implements JavascriptExecutor {
         }
     }
 
-    public synchronized WebElement filterElementListBy(List<WebElement> list, CRITERIA criteria, String text) {
+    public synchronized @Nullable WebElement filterElementListBy(List<WebElement> list, CRITERIA criteria, String text) {
         for (WebElement element : list) {
             String toEvaluate = switch (criteria) {
                 case CLASS -> element.getClass().getName();
@@ -234,12 +178,12 @@ public class TabDriver implements JavascriptExecutor {
     }
 
     @Override
-    public Object executeScript(String script, Object... args) {
+    public @Nullable Object executeScript(String script, Object... args) {
         return null;
     }
 
     @Override
-    public Object executeAsyncScript(String script, Object... args) {
+    public @Nullable Object executeAsyncScript(String script, Object... args) {
         return null;
     }
 
@@ -281,13 +225,13 @@ public class TabDriver implements JavascriptExecutor {
     /**
      * Return the first occurrence of specified class that has specified label.
      */
-    public synchronized WebElement getWhere(String className, CRITERIA criteria, String text) {
+    public synchronized @Nullable WebElement getWhere(String className, CRITERIA criteria, String text) {
         switchToFrameContainingCharSeq(text);
         List<WebElement> elements = findElements(By.className(className));
         return filterElementListBy(elements, criteria, text);
     }
 
-    public synchronized WebElement getWhere(String className) {
+    public synchronized @Nullable WebElement getWhere(String className) {
         switchToFrameContainingCharSeq(className);
         List<WebElement> elements = findElements(By.className(className));
         return filterElementListBy(elements, CRITERIA.NONE, Constants.EMPTY);
@@ -300,7 +244,7 @@ public class TabDriver implements JavascriptExecutor {
 
 
     public synchronized void setRadio(WebElement element, boolean checked) {
-        ((JavascriptExecutor) this).executeScript("arguments[0].checked = " + checked + ";", element);
+        ((JavascriptExecutor) this).executeScript("arguments[0].checked = " + checked + ';', element);
     }
 
     public synchronized void setComboByDataValue(By comboBy, String dataValue) {
@@ -360,7 +304,7 @@ public class TabDriver implements JavascriptExecutor {
      */
     public synchronized WebElement getByFieldValue(SearchContext searchContext, String type, String field, String value) {
 
-        return searchContext.findElement(By.cssSelector(type + "[" + field + "='" + value + "']"));
+        return searchContext.findElement(By.cssSelector(type + '[' + field + "='" + value + "']"));
     }
 
     public synchronized WebElement getByText(String text) {

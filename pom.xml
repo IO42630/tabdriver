@@ -8,13 +8,13 @@
 		<version>jdk17-0.0</version>
 	</parent>
 	<artifactId>tabdriver</artifactId>
-    <version>1.2.4</version>
+    <version>1.3.0</version>
 	<packaging>jar</packaging>
 
 	<name>tabdriver</name>
 
 	<properties>
-		<xx.selenium.version>3.141.59</xx.selenium.version>
+        <xx.selenium.version>4.21.0</xx.selenium.version>
 		<xx.webdriver.version>0.9.7376</xx.webdriver.version>
 	</properties>
 
@@ -75,7 +75,13 @@
 			<groupId>com.olexyn</groupId>
 			<artifactId>min-prop</artifactId>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 
 
