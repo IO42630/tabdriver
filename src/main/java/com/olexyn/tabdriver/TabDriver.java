@@ -101,6 +101,9 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
 
     @Override
     public synchronized void newTab(Purpose purpose) {
+        if (tabs.values().stream().anyMatch(x -> Objects.equals(x.getPurpose(), purpose))) {
+            return;
+        }
         switchTo().newWindow(WindowType.TAB);
         String handle = getWindowHandle();
         Tab tab = new Tab(handle, purpose);
