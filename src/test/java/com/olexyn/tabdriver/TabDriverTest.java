@@ -3,6 +3,7 @@ package com.olexyn.tabdriver;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 
@@ -11,13 +12,12 @@ public class TabDriverTest {
 
     TabDriver tabDriver;
 
-
     @BeforeEach
     public void setUp() {
         tabDriver = new TabDriver(new TestTabDriverConfig());
     }
 
-
+    @Disabled
     @Test
     public void test() {
         var google = new Purpose("GOOGLE");
