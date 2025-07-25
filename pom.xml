@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>com.olexyn</groupId>
 		<artifactId>min-root</artifactId>
-		<version>17.0.1</version>
+		<version>17.0.2</version>
 	</parent>
 	<artifactId>tabdriver</artifactId>
     <version>1.4.0</version>
