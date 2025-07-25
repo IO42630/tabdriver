@@ -8,10 +8,10 @@
 		<version>17.0.1</version>
 	</parent>
 	<artifactId>tabdriver</artifactId>
-    <version>1.3.2</version>
+    <version>1.4.0</version>
 	<packaging>jar</packaging>
 	<properties>
-        <xx.selenium.version>4.21.0</xx.selenium.version>
+        <xx.selenium.version>4.34.0</xx.selenium.version>
 		<xx.webdriver.version>0.9.7376</xx.webdriver.version>
 	</properties>
 	<dependencyManagement>
@@ -26,11 +26,6 @@
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
-		<dependency>
-			<groupId>com.olexyn</groupId>
-			<artifactId>min-log</artifactId>
-			<version>0.6</version>
-		</dependency>
 		<dependency>
 			<!-- must come before selenium -->
 			<groupId>org.seleniumhq.selenium</groupId>

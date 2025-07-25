@@ -1,11 +1,11 @@
 package com.olexyn.tabdriver;
 
-import com.olexyn.min.log.LogU;
+
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.NoSuchFrameException;
 import org.openqa.selenium.SearchContext;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -119,8 +119,12 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
         chromeDriver.get(url);
     }
 
-    public synchronized WebElement findElement(By by) {
-        return chromeDriver.findElement(by);
+    public synchronized Optional<WebElement> findElement(By by) {
+        try {
+            return Optional.of(chromeDriver.findElement(by));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     public synchronized void executeScript(String script) {
@@ -133,43 +137,12 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
         }
     }
 
-    public synchronized @Nullable WebElement filterElementListBy(List<WebElement> list, CRITERIA criteria, String text) {
-        for (WebElement element : list) {
-            String toEvaluate = switch (criteria) {
-                case CLASS -> element.getClass().getName();
-                case TEXT -> element.getText();
-                case TAG -> element.getTagName();
-                case HREF -> element.getAttribute("href");
-                case ID -> element.getAttribute("id");
-                case TITLE -> element.getAttribute("title");
-                case NONE -> text;
-            };
-            if (toEvaluate != null && toEvaluate.contains(text)) { return element; }
-        }
-        return null;
-    }
+
 
     private static final String FRAME_ID_DEFAULT_CONTENT = "defaultContent";
     private static final String FRAME_ID_NONE_FOUND = "noneFound";
 
-    /**
-     * Collects all frames accessible to WebDriver.
-     */
-    public synchronized Map<String, String> collectAllFrames() throws NoSuchFrameException {
-        Map<String, String> mapOfCollectedSources = new HashMap<>();
-        switchTo().defaultContent();
-        mapOfCollectedSources.put(FRAME_ID_DEFAULT_CONTENT, getPageSource());
-        for (int i = 0; i < 10; i++) {
-            try {
-                switchTo().defaultContent();
-                switchTo().frame(i);
-                mapOfCollectedSources.put(String.valueOf(i), getPageSource());
-            } catch (NoSuchFrameException e) {
-                return mapOfCollectedSources;
-            }
-        }
-        return mapOfCollectedSources;
-    }
+
 
     public synchronized String findFrameContainingCharSeq(Map<String, String> mapOfCollectedSources, String string) {
         for (Entry<String, String> entry : mapOfCollectedSources.entrySet()) {
@@ -201,46 +174,7 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
         TITLE
     }
 
-    public synchronized void switchToFrameContainingCharSeq(String charSeq) {
-        switchTo().defaultContent();
-        sleep(500);
-        final String frameId = findFrameContainingCharSeq(collectAllFrames(), charSeq);
-        sleep(400);
-        switch (frameId) {
-            case FRAME_ID_DEFAULT_CONTENT:
-                switchTo().defaultContent();
-                break;
-            case FRAME_ID_NONE_FOUND:
-                break;
-            default:
-                switchTo().frame(Integer.parseInt(frameId));
-        }
-    }
-
-    public static void sleep(long milli) {
-        try {
-            Thread.sleep(milli);
-        } catch (InterruptedException e) {
-            LogU.warnPlain("SLEEP was INTERRUPED.");
-        }
-    }
-
-    /**
-     * Return the first occurrence of specified class that has specified label.
-     */
-    public synchronized @Nullable WebElement getWhere(String className, CRITERIA criteria, String text) {
-        switchToFrameContainingCharSeq(text);
-        List<WebElement> elements = findElements(By.className(className));
-        return filterElementListBy(elements, criteria, text);
-    }
-
-    public synchronized @Nullable WebElement getWhere(String className) {
-        switchToFrameContainingCharSeq(className);
-        List<WebElement> elements = findElements(By.className(className));
-        return filterElementListBy(elements, CRITERIA.NONE, Constants.EMPTY);
-    }
-
-    public synchronized void followContainedLink(WebElement element) {
+    public synchronized void followContainedLink(@NonNull WebElement element) {
         String link = element.getAttribute("href");
         if (link != null) { navigate().to(link); }
     }
@@ -250,19 +184,14 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
         ((JavascriptExecutor) this).executeScript("arguments[0].checked = " + checked + ';', element);
     }
 
-    public synchronized void setComboByDataValue(By comboBy, String dataValue) {
-        WebElement combo = findElement(comboBy);
+    public synchronized void setComboByDataValue(@NonNull WebElement combo , String dataValue) {
         combo.click();
         combo.findElement(By.cssSelector("li[data-value='" + dataValue + "']")).click();
     }
 
 
     public synchronized Optional<WebElement> findByCss(String css) {
-        try {
-            return Optional.of(findElement(By.cssSelector(css)));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+        return findElement(By.cssSelector(css));
     }
 
     public synchronized Optional<WebElement> findByCss(WebElement context, String css) {
@@ -289,28 +218,8 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
         }
     }
 
-    /**
-     * Any-Match.
-     */
-    public synchronized WebElement getByFieldValue(String type, String field, String value) {
-        return findElement(By.cssSelector(type + '[' + field + "*='" + value + "']"));
-    }
 
-    public synchronized void clickByFieldValue(String type, String field, String value) {
-        var we = getByFieldValue(type, field, value);
-        click(we);
-    }
-
-    /**
-     * @param field can contain wildcards like "class*" or "class^"
-     * @param value can contain partial matches like "last-"
-     */
-    public synchronized WebElement getByFieldValue(SearchContext searchContext, String type, String field, String value) {
-
-        return searchContext.findElement(By.cssSelector(type + '[' + field + "='" + value + "']"));
-    }
-
-    public synchronized WebElement getByText(String text) {
+    public synchronized Optional<WebElement> getByText(String text) {
         return findElement(By.xpath("//*[contains(text(),'" + text + "')]"));
     }
 
