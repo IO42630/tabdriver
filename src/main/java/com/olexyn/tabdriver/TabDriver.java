@@ -76,7 +76,7 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
         chromeDriver.quit();
     }
 
-    public List<WebElement> findElements(By by) {
+    private List<WebElement> findElements(By by) {
         return chromeDriver.findElements(by);
     }
 
@@ -118,7 +118,7 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
         chromeDriver.get(url);
     }
 
-    public synchronized Optional<WebElement> findElement(By by) {
+    private synchronized Optional<WebElement> findElement(By by) {
         try {
             return Optional.of(chromeDriver.findElement(by));
         } catch (Exception e) {
