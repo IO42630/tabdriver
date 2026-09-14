@@ -10,6 +10,9 @@ chrome.driver.path=
 headless=false
 download.dir=
 ```
+## Setup
+
+- OSX `xattr -dr com.apple.quarantine`
 
 ## Usage
 

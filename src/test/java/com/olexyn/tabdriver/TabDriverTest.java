@@ -17,7 +17,7 @@ public class TabDriverTest {
         tabDriver = new TabDriver(new TestTabDriverConfig());
     }
 
-    @Disabled
+
     @Test
     public void test() {
         var google = new Purpose("GOOGLE");
@@ -27,7 +27,6 @@ public class TabDriverTest {
         tabDriver.newTab(youtube);
         tabDriver.get("https://www.youtube.com");
         tabDriver.goToTab(google);
-        int br = 0;
     }
 
 

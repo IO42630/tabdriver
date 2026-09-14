@@ -12,6 +12,7 @@ import org.openqa.selenium.WindowType;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeDriverService;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 
 @SuppressWarnings("unused")
@@ -37,7 +37,7 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
             .build();
 
         chromeDriver = new ChromeDriver(service, configProvider.getOptions());
-        chromeDriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+        chromeDriver.manage().timeouts().implicitlyWait(Duration.ofSeconds(2));
     }
 
     public WebDriver.Navigation navigate() {

@@ -6,7 +6,7 @@ public class TestTabDriverConfig extends DefaultTabDriverConfig {
 
     @Override
     public Path getDriverPath() {
-        return Path.of(System.getProperties().getProperty("user.dir"), "/src/test/resources/chromedriver_124");
+        return Path.of(System.getProperties().getProperty("user.home"), "/home/apps/chrome_155/chromedriver");
     }
 
     @Override
