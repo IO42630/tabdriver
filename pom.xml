@@ -11,7 +11,7 @@
     <version>1.4.1</version>
 	<packaging>jar</packaging>
 	<properties>
-        <xx.selenium.version>4.21.0</xx.selenium.version>
+        <xx.selenium.version>4.34.0</xx.selenium.version>
 		<xx.webdriver.version>0.9.7376</xx.webdriver.version>
 	</properties>
 	<dependencyManagement>
