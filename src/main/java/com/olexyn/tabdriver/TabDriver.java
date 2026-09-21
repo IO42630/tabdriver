@@ -193,6 +193,16 @@ public class TabDriver implements JavascriptExecutor, ITabDriver {
         return findElement(By.cssSelector(css));
     }
 
+    public synchronized Optional<WebElement> findByCssAndText(String css, String text) {
+        return findElements(By.cssSelector(css))
+                .stream()
+                .filter(elem -> {
+                    var textContent = elem.getAttribute("textContent");
+                    return textContent != null && textContent.contains(text);
+                })
+                .findFirst();
+    }
+
     public synchronized Optional<WebElement> findByCss(WebElement context, String css) {
         try {
             return Optional.of(context.findElement(By.cssSelector(css)));

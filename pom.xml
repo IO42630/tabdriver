@@ -8,7 +8,7 @@
 		<version>25.0.3</version>
 	</parent>
 	<artifactId>tabdriver</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
 	<packaging>jar</packaging>
 	<properties>
         <xx.selenium.version>4.49.0</xx.selenium.version>
