@@ -2,6 +2,17 @@
 
 set -euo pipefail
 
+skip_tests=()
+for arg in "$@"; do
+    case "$arg" in
+        --skip-tests) skip_tests+=(-DskipTests) ;;
+        *)
+            printf 'Usage: %s [--skip-tests]\n' "$0" >&2
+            exit 2
+            ;;
+    esac
+done
+
 cd "$(dirname "$0")"
 . .env
 
@@ -47,4 +58,4 @@ esac
 gpg --batch --yes --pinentry-mode loopback --import "$MVN_SETTINGS/gpg-private.asc"
 
 exec mvn --batch-mode --no-transfer-progress clean deploy -e -Prelease \
-    -s "$MVN_SETTINGS/maven-settings.xml"
+    -s "$MVN_SETTINGS/maven-settings.xml" "${skip_tests[@]}"
